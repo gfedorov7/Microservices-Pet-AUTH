@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Any
 
 import jwt
 
@@ -12,7 +12,7 @@ class JWTDecoder(Decoder):
         self.public_key = public_key
         self.algorithm = algorithm
 
-    def decode(self, token: str) -> Dict[str, any]:
+    def decode(self, token: str) -> Dict[str, Any]:
         try:
             return jwt.decode(token, self.public_key, algorithms=[self.algorithm])
         except jwt.ExpiredSignatureError:

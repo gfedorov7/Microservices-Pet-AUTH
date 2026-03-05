@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Sequence
+from typing import Dict, Sequence, Any
 from src.util.type.model import ModelType
 
 
@@ -11,10 +11,10 @@ class Repository(ABC):
     async def get(self, limit: int, offset: int) -> Sequence[ModelType] | None: ...
 
     @abstractmethod
-    async def create(self, model: Dict[str, any]) -> ModelType: ...
+    async def create(self, model: Dict[str, Any]) -> ModelType: ...
 
     @abstractmethod
-    async def update(self, id: int, model: Dict[str, any]) -> ModelType: ...
+    async def update(self, id: int, model: Dict[str, Any]) -> ModelType: ...
 
     @abstractmethod
     async def delete(self, id: int) -> None: ...

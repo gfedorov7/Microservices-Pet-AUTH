@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict
+from typing import Dict, Any
 
 import jwt
 
@@ -12,6 +12,6 @@ class JWTEncoder(Encoder):
         self.algorithm = algorithm
         self.exp = expires_after_seconds
 
-    def encode(self, payload: Dict[str, any]) -> str:
+    def encode(self, payload: Dict[str, Any]) -> str:
         payload['exp'] = datetime.datetime.now() + datetime.timedelta(seconds=self.exp)
         return jwt.encode(payload, self.private_key, algorithm=self.algorithm)
