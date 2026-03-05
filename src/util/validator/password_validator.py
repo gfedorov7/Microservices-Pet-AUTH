@@ -1,9 +1,10 @@
 import re
 
 from src.config import settings
-from src.util.error_message_and_code import app_errors, PASSWORD_SHORT, PASSWORD_HAS_NOT_SPEC, PASSWORD_HAS_NOT_NUMBERS, \
+from src.util.errors.error_message_and_code import app_errors, PASSWORD_SHORT, PASSWORD_HAS_NOT_SPEC, PASSWORD_HAS_NOT_NUMBERS, \
     PASSWORD_HAS_NOT_LETTERS
-from src.util.exception.password_invalid_exception import PasswordInvalidException
+from src.util.errors.error_types import ErrorType
+from src.util.exception.app_exception import AppException
 from src.util.validator.validator import Validator
 
 
@@ -16,17 +17,13 @@ class PasswordValidator(Validator):
 
     def is_valid(self) -> bool:
         if not self._check_len_password():
-            error = app_errors[PASSWORD_SHORT]
-            raise PasswordInvalidException(error["message"], error["code"])
+            raise AppException(app_errors[ErrorType.PASSWORD_SHORT])
         if not self._check_available_spec_symbols():
-            error = app_errors[PASSWORD_HAS_NOT_SPEC]
-            raise PasswordInvalidException(error["message"], error["code"])
+            raise AppException(app_errors[ErrorType.PASSWORD_HAS_NOT_SPEC])
         if not self._check_numbers_in_password():
-            error = app_errors[PASSWORD_HAS_NOT_NUMBERS]
-            raise PasswordInvalidException(error["message"], error["code"])
+            raise AppException(app_errors[ErrorType.PASSWORD_HAS_NOT_NUMBERS])
         if not self._check_letters_in_password():
-            error = app_errors[PASSWORD_HAS_NOT_LETTERS]
-            raise PasswordInvalidException(error["message"], error["code"])
+            raise AppException(app_errors[ErrorType.PASSWORD_HAS_NOT_LETTERS])
 
         return True
 

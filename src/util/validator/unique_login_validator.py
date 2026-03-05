@@ -1,6 +1,7 @@
 from src.repository.user_repository import UserRepository
-from src.util.error_message_and_code import app_errors, LOGIN_ALREADY_USED
-from src.util.exception.unique_user_exception import UniqueUserException
+from src.util.errors.error_message_and_code import app_errors, LOGIN_ALREADY_USED
+from src.util.errors.error_types import ErrorType
+from src.util.exception.app_exception import AppException
 from src.util.validator.validator import Validator
 
 
@@ -10,9 +11,8 @@ class UniqueLoginValidator(Validator):
         self.user_repository = user_repository
 
     async def is_valid(self):
-        if not self._check_login_to_unique():
-            error = app_errors[LOGIN_ALREADY_USED]
-            raise UniqueUserException(error["message"], error["code"])
+        if not await self._check_login_to_unique():
+            raise AppException(app_errors[ErrorType.LOGIN_ALREADY_USED])
 
         return True
 

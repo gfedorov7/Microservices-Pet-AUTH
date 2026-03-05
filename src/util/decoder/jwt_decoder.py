@@ -3,8 +3,9 @@ from typing import Dict, Any
 import jwt
 
 from src.util.decoder.decoder import Decoder
-from src.util.exception.token_exception import TokenException
-from src.util.error_message_and_code import app_errors, TOKEN_EXPIRED, TOKEN_INVALID
+from src.util.errors.error_message_and_code import app_errors, TOKEN_EXPIRED, TOKEN_INVALID
+from src.util.errors.error_types import ErrorType
+from src.util.exception.app_exception import AppException
 
 
 class JWTDecoder(Decoder):
@@ -16,8 +17,6 @@ class JWTDecoder(Decoder):
         try:
             return jwt.decode(token, self.public_key, algorithms=[self.algorithm])
         except jwt.ExpiredSignatureError:
-            error = app_errors[TOKEN_EXPIRED]
-            raise TokenException(error["message"], error["code"])
+            raise AppException(app_errors[ErrorType.TOKEN_EXPIRED])
         except jwt.InvalidTokenError:
-            error = app_errors[TOKEN_INVALID]
-            raise TokenException(error["message"], error["code"])
+            raise AppException(app_errors[ErrorType.TOKEN_INVALID])
