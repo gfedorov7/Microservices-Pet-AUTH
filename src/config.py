@@ -14,20 +14,36 @@ class DatabaseSettings(CommonSettings):
     database_echo: bool
 
 class TokenSettings(CommonSettings):
-    private_key_path: str
-    public_key_path: str
     token_algorithm: str
     token_type: str
     token_access_expires: int
     token_refresh_expires: int
 
-class PasswordParamsSetting(BaseSettings):
+class PasswordParamsSettings(BaseSettings):
     len_password: int = 8
     available_spec_symbols: List[str] = ["/", "$", "@", ".", "_", "-"]
+
+class KeysSettings(CommonSettings):
+    private_key_path: str
+    public_key_path: str
+
+    @property
+    def private_key(self) -> bytes:
+        return self._read_file(self.private_key_path)
+
+    @property
+    def public_key(self) -> bytes:
+        return self._read_file(self.public_key_path)
+
+    @staticmethod
+    def _read_file(path: str) -> bytes:
+        with open(path, "rb") as f:
+            return f.read()
 
 class Settings:
     database_settings: DatabaseSettings = DatabaseSettings()
     token_settings: TokenSettings = TokenSettings()
-    password_params_settings: PasswordParamsSetting = PasswordParamsSetting()
+    password_params_settings: PasswordParamsSettings = PasswordParamsSettings()
+    keys_settings: KeysSettings = KeysSettings()
 
 settings = Settings()
