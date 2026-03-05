@@ -1,16 +1,6 @@
 from src.util.errors.app_error import AppError
 from src.util.errors.error_types import ErrorType
 
-TOKEN_EXPIRED = "Token expired"
-TOKEN_INVALID = "Token invalid"
-
-PASSWORD_SHORT = "Password short"
-PASSWORD_HAS_NOT_SPEC = "Password has not spec"
-PASSWORD_HAS_NOT_NUMBERS = "Password has not numbers"
-PASSWORD_HAS_NOT_LETTERS = "Password has not letters"
-
-LOGIN_ALREADY_USED = "Login already used"
-
 app_errors = {
     ErrorType.TOKEN_EXPIRED: AppError(
         message="Token already expired",
