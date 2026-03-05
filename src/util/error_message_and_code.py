@@ -36,7 +36,7 @@ app_errors = {
     },
 
     LOGIN_ALREADY_USED: {
-        "message": "Login is already user another user",
+        "message": "Login is already use another user",
         "code": 409,
     },
 }
