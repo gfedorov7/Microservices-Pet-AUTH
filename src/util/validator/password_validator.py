@@ -1,12 +1,10 @@
 import re
 
 from src.config import settings
-from src.util.errors.error_message_and_code import app_errors, PASSWORD_SHORT, PASSWORD_HAS_NOT_SPEC, PASSWORD_HAS_NOT_NUMBERS, \
-    PASSWORD_HAS_NOT_LETTERS
+from src.util.errors.error_message_and_code import app_errors
 from src.util.errors.error_types import ErrorType
 from src.util.exception.app_exception import AppException
 from src.util.validator.validator import Validator
-
 
 
 class PasswordValidator(Validator):
