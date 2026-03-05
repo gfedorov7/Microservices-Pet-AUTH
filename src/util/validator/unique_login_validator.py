@@ -1,5 +1,5 @@
 from src.repository.user_repository import UserRepository
-from src.util.errors.error_message_and_code import app_errors
+from src.util.errors.error_catalogs import app_errors
 from src.util.errors.error_types import ErrorType
 from src.util.exception.app_exception import AppException
 from src.util.validator.validator import Validator
