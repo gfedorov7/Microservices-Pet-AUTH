@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,8 +21,13 @@ class TokenSettings(CommonSettings):
     token_access_expires: int
     token_refresh_expires: int
 
+class PasswordParamsSetting(BaseSettings):
+    len_password: int = 8
+    available_spec_symbols: List[str] = ["/", "$", "@", ".", "_", "-"]
+
 class Settings:
     database_settings: DatabaseSettings = DatabaseSettings()
     token_settings: TokenSettings = TokenSettings()
+    password_params_settings: PasswordParamsSetting = PasswordParamsSetting()
 
 settings = Settings()
