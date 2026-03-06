@@ -11,3 +11,5 @@ class ErrorType(Enum):
     PASSWORD_HAS_NOT_LETTERS = "Password has not letters"
 
     LOGIN_ALREADY_USED = "Login already used"
+
+    PASSWORD_IS_NOT_SPECIFIED = "Password is not specified"

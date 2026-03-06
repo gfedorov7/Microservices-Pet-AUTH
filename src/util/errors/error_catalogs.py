@@ -32,4 +32,9 @@ app_errors = {
         message="Login is already used another user",
         code=409,
     ),
+
+    ErrorType.PASSWORD_IS_NOT_SPECIFIED: AppError(
+        message="Password is not specified",
+        code=422,
+    ),
 }
