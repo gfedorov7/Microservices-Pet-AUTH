@@ -13,4 +13,8 @@ class User(DateTimeModelMixin, Base):
     login: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     password: Mapped[bytes]
 
-    refresh_token: Mapped[List["RefreshToken"]] = relationship("RefreshToken", back_populates="users")
+    refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
+        "RefreshToken",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )

@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from src.model.base import Base
@@ -15,5 +16,12 @@ class RefreshToken(DateTimeModelMixin, Base):
     is_expired: Mapped[bool] = mapped_column(default=False)
     expired_at: Mapped[datetime] = mapped_column(default=None)
 
-    user_id: Mapped[int] = mapped_column(unique=True, index=True, nullable=False)
-    user: Mapped["User"] = relationship("User", back_populates="refresh_tokens")
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False
+    )
+    user: Mapped["User"] = relationship(
+        "User",
+        back_populates="refresh_tokens"
+    )
