@@ -58,10 +58,28 @@ async def refresh(
         jwt_service: JwtService = Depends(get_jwt_service),
         jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
 ):
-    payload = jwt_service.decode(token.refresh_token)
-    user_id = payload.get("user_id")
+    user_id = get_user_id_from_refresh_token(token.refresh_token, jwt_service)
 
     return await token_generator(user_id, jwt_service, jwt_rt_create_service)
+
+@api_router.post("/logout")
+async def logout(
+        token: TokenRegenerate,
+        jwt_service: JwtService = Depends(get_jwt_service),
+        jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
+):
+    user_id = get_user_id_from_refresh_token(token.refresh_token, jwt_service)
+    await jwt_rt_create_service.disable_tokens_by_user(user_id)
+
+    return {"message": "success"}
+
+def get_user_id_from_refresh_token(
+        refresh_token: str,
+        jwt_service: JwtService = Depends(get_jwt_service),
+):
+    payload = jwt_service.decode(refresh_token)
+
+    return payload.get("user_id")
 
 async def token_generator(
         user_id: int,
