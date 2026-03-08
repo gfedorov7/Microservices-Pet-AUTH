@@ -12,7 +12,7 @@ class BcryptHasher(Hasher):
 
     @staticmethod
     def compare(hash_value: bytes, value: Any) -> Any:
-        return bcrypt.checkpw(hash_value, value)
+        return bcrypt.checkpw(value.encode(), hash_value)
 
     @staticmethod
     def _get_salt():

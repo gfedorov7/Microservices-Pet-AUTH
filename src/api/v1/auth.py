@@ -7,13 +7,16 @@ from src.config import settings
 from src.dependency.repository.user_repository import get_user_repo
 from src.dependency.service.jwt_refresh_token_create_service import get_jwt_refresh_token_create_service
 from src.dependency.service.jwt_service import get_jwt_service
+from src.dependency.service.user_auth_service import get_user_auth_service
 from src.dependency.service.user_create_service import get_user_create_service
+from src.model.user import User
 from src.repository.user_repository import UserRepository
 from src.schemas.refresh_token import RefreshTokenModelCreate
 from src.schemas.token import Token
-from src.schemas.user import UserCreate
+from src.schemas.user import UserCreate, UserLogin
 from src.service.jwt_refresh_token_create_service import JwtRefreshTokenCreateService
 from src.service.jwt_service import JwtService
+from src.service.user_auth_service import UserAuthService
 from src.service.user_create_service import UserCreateService
 from src.util.validator.new_user_validator import NewUserValidator
 from src.util.validator.password_validator import PasswordValidator
@@ -36,8 +39,26 @@ async def sign_up(
 
     new_user = await user_create_service.create_user(user_in.model_dump(), new_user_validator)
 
+    return await token_generator(new_user.id, jwt_service, jwt_rt_create_service)
+
+@api_router.post("/login")
+async def login(
+        user_in: UserLogin,
+        auth_service: UserAuthService = Depends(get_user_auth_service),
+        jwt_service: JwtService = Depends(get_jwt_service),
+        jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
+):
+    user = await auth_service.login(user_in.model_dump())
+
+    return await token_generator(user.id, jwt_service, jwt_rt_create_service)
+
+async def token_generator(
+        user_id: int,
+        jwt_service: JwtService = Depends(get_jwt_service),
+        jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
+):
     payload = {
-        "user_id": new_user.id,
+        "user_id": user_id,
     }
 
     access_token_expired = datetime.now() + timedelta(seconds=settings.token_settings.token_access_expires)
@@ -49,7 +70,7 @@ async def sign_up(
     refresh_token_schema = RefreshTokenModelCreate(
         token=refresh_token,
         expired_at=refresh_token_expired,
-        user_id=new_user.id
+        user_id=user_id
     )
     await jwt_rt_create_service.save_new_and_disable_old(refresh_token_schema.model_dump())
 
@@ -57,4 +78,3 @@ async def sign_up(
         access_token=access_token,
         refresh_token=refresh_token,
     )
-

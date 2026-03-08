@@ -37,4 +37,13 @@ app_errors = {
         message="Password is not specified",
         code=422,
     ),
+
+    ErrorType.USER_NOT_FOUND: AppError(
+        message="User not found",
+        code=404,
+    ),
+    ErrorType.INVALID_PASSWORD: AppError(
+        message="Invalid password",
+        code=401,
+    ),
 }

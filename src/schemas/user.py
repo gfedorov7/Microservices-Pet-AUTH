@@ -9,6 +9,8 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str | bytes
 
+class UserLogin(UserCreate): ...
+
 class UserUpdate(BaseModel):
     login: str | None = None
     password: str | bytes | None = None

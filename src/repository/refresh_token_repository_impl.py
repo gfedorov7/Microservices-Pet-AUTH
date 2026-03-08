@@ -17,8 +17,7 @@ class RefreshTokenRepositoryImpl(BaseRepository):
             update(self.model)
             .where(
                 self.model.user_id == user_id,
-                self.model.is_expired == False,
-                self.model.expired_at < func.now(),
+                self.model.is_expired == False
             )
             .values(is_expired=True)
         )

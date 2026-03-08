@@ -13,3 +13,6 @@ class ErrorType(Enum):
     LOGIN_ALREADY_USED = "Login already used"
 
     PASSWORD_IS_NOT_SPECIFIED = "Password is not specified"
+
+    USER_NOT_FOUND = "User not found"
+    INVALID_PASSWORD = "Password invalid"
