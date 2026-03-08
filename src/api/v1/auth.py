@@ -33,12 +33,8 @@ async def sign_up(
         jwt_service: JwtService = Depends(get_jwt_service),
         user_create_service: UserCreateService = Depends(get_user_create_service)
 ):
-    password_validator = PasswordValidator(user_in.password)
-    unique_login_validator = UniqueLoginValidator(user_in.login, user_repo)
-    new_user_validator = NewUserValidator(password_validator, unique_login_validator)
-
+    new_user_validator = get_new_user_validator(user_in.login, user_in.password, user_repo)
     new_user = await user_create_service.create_user(user_in.model_dump(), new_user_validator)
-
     return await token_generator(new_user.id, jwt_service, jwt_rt_create_service)
 
 @api_router.post("/login")
@@ -49,7 +45,6 @@ async def login(
         jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
 ):
     user = await auth_service.login(user_in.model_dump())
-
     return await token_generator(user.id, jwt_service, jwt_rt_create_service)
 
 @api_router.post("/refresh")
@@ -59,7 +54,6 @@ async def refresh(
         jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
 ):
     user_id = get_user_id_from_refresh_token(token.refresh_token, jwt_service)
-
     return await token_generator(user_id, jwt_service, jwt_rt_create_service)
 
 @api_router.post("/logout")
@@ -72,6 +66,11 @@ async def logout(
     await jwt_rt_create_service.disable_tokens_by_user(user_id)
 
     return {"message": "success"}
+
+def get_new_user_validator(login: str, password: str, user_repo: UserRepository):
+    password_validator = PasswordValidator(password)
+    unique_login_validator = UniqueLoginValidator(login, user_repo)
+    return NewUserValidator(password_validator, unique_login_validator)
 
 def get_user_id_from_refresh_token(
         refresh_token: str,
