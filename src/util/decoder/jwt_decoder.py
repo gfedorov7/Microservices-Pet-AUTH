@@ -8,7 +8,7 @@ from src.util.errors.error_types import ErrorType
 from src.util.exception.app_exception import AppException
 
 
-class JWTDecoder(Decoder):
+class JwtDecoder(Decoder):
     def __init__(self, public_key: str, algorithm: str):
         self.public_key = public_key
         self.algorithm = algorithm

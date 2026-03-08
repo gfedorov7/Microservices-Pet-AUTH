@@ -7,7 +7,7 @@ import jwt
 from src.util.encoder.encoder import Encoder
 
 
-class JWTEncoder(Encoder):
+class JwtEncoder(Encoder):
     def __init__(self, private_key: str, algorithm: str):
         self.private_key = private_key
         self.algorithm = algorithm
