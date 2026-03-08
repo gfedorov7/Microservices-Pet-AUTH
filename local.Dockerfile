@@ -23,4 +23,4 @@ COPY . .
 
 RUN chmod +x local_entrypoint.sh
 
-CMD ["./local_entrypoint.sh"]
+CMD ["bash", "./local_entrypoint.sh"]
