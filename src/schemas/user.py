@@ -14,5 +14,10 @@ class UserUpdate(BaseModel):
     password: str | bytes | None = None
 
 class UserRead(BaseModel):
+    id: int
     created_at: datetime
     updated_at: datetime
+
+    model_config = {
+        "from_attributes": True
+    }
