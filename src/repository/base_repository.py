@@ -8,7 +8,7 @@ from src.repository.repository import Repository
 from src.util.type.model import ModelType
 
 
-class BaseRepository(ABC, Repository):
+class BaseRepository(Repository):
     def __init__(self, session: AsyncSession, model: Type[ModelType]):
         self.session = session
         self.model = model

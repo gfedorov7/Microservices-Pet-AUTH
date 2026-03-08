@@ -1,11 +1,8 @@
-from typing import Type
+from abc import ABC, abstractmethod
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.repository.base_repository import BaseRepository
-from src.util.type.model import ModelType
+from src.repository.repository import Repository
 
 
-class RefreshTokenRepository(BaseRepository):
-    def __init__(self, session: AsyncSession, model: Type[ModelType]):
-        super().__init__(session, model)
+class RefreshTokenRepository(Repository):
+    @abstractmethod
+    async def disabled_not_expired_old_tokens_by_user(self, user_id: int) -> None: ...
