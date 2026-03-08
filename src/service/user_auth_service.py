@@ -18,11 +18,18 @@ class UserAuthService:
         self.hasher = hasher
 
     async def login(self, user_in: Dict[str, Any]) -> User:
-        user = await self.user_repo.get_by_login(user_in.get("login"))
+        user = await self._get_user_by_login(user_in.get("login"))
+        self._compare_password(user_in.get("password"), user.password)
+
+        return user
+
+    async def _get_user_by_login(self, login: str) -> User:
+        user = await self.user_repo.get_by_login(login)
         if user is None:
             raise AppException(app_errors[ErrorType.USER_NOT_FOUND])
 
-        if not self.hasher.compare(user.password, user_in.get("password")):
-            raise AppException(app_errors[ErrorType.INVALID_PASSWORD])
-
         return user
+
+    def _compare_password(self, password: str, hashed_password: bytes) -> None:
+        if not self.hasher.compare(hashed_password, password):
+            raise AppException(app_errors[ErrorType.INVALID_PASSWORD])
