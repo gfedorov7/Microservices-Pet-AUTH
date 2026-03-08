@@ -12,7 +12,7 @@ from src.dependency.service.user_create_service import get_user_create_service
 from src.model.user import User
 from src.repository.user_repository import UserRepository
 from src.schemas.refresh_token import RefreshTokenModelCreate
-from src.schemas.token import Token
+from src.schemas.token import Token, TokenRegenerate
 from src.schemas.user import UserCreate, UserLogin
 from src.service.jwt_refresh_token_create_service import JwtRefreshTokenCreateService
 from src.service.jwt_service import JwtService
@@ -51,6 +51,20 @@ async def login(
     user = await auth_service.login(user_in.model_dump())
 
     return await token_generator(user.id, jwt_service, jwt_rt_create_service)
+
+@api_router.post("/refresh")
+async def refresh(
+        token: TokenRegenerate,
+        jwt_service: JwtService = Depends(get_jwt_service),
+        jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
+):
+    print(token.refresh_token)
+    payload = jwt_service.decode(token.refresh_token)
+    print(payload)
+    user_id = payload.get("user_id")
+    print(user_id)
+
+    return await token_generator(user_id, jwt_service, jwt_rt_create_service)
 
 async def token_generator(
         user_id: int,
