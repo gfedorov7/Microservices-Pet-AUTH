@@ -17,6 +17,7 @@ class UserUpdate(BaseModel):
 
 class UserRead(BaseModel):
     id: int
+    login: str
     created_at: datetime
     updated_at: datetime
 

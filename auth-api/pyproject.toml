@@ -18,7 +18,8 @@ dependencies = [
     "bcrypt (>=5.0.0,<6.0.0)",
     "pyjwt (>=2.11.0,<3.0.0)",
     "cryptography (>=46.0.5,<47.0.0)",
-    "tzdata (>=2025.3,<2026.0)"
+    "tzdata (>=2025.3,<2026.0)",
+    "redis (>=7.3.0,<8.0.0)"
 ]
 
 [tool.poetry]

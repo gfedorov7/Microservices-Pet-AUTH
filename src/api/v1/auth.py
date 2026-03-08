@@ -1,9 +1,13 @@
+import json
 from datetime import datetime, timedelta
+from typing import Any, Coroutine
 
 from fastapi import APIRouter
 from fastapi.params import Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from src.config import settings
+from src.dependency.cache.redis_cache import get_redis_cache
 from src.dependency.repository.user_repository import get_user_repo
 from src.dependency.service.jwt_refresh_token_create_service import get_jwt_refresh_token_create_service
 from src.dependency.service.jwt_service import get_jwt_service
@@ -13,17 +17,20 @@ from src.model.user import User
 from src.repository.user_repository import UserRepository
 from src.schemas.refresh_token import RefreshTokenModelCreate
 from src.schemas.token import Token, TokenRegenerate
-from src.schemas.user import UserCreate, UserLogin
+from src.schemas.user import UserCreate, UserLogin, UserRead
 from src.service.jwt_refresh_token_create_service import JwtRefreshTokenCreateService
 from src.service.jwt_service import JwtService
 from src.service.user_auth_service import UserAuthService
 from src.service.user_create_service import UserCreateService
+from src.util.cache.cache import Cache
 from src.util.validator.new_user_validator import NewUserValidator
 from src.util.validator.password_validator import PasswordValidator
 from src.util.validator.unique_login_validator import UniqueLoginValidator
 
 
 api_router = APIRouter(prefix="/auth", tags=["Auth"])
+
+security = HTTPBearer()
 
 @api_router.post("/sign-up")
 async def sign_up(
@@ -53,7 +60,7 @@ async def refresh(
         jwt_service: JwtService = Depends(get_jwt_service),
         jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
 ):
-    user_id = get_user_id_from_refresh_token(token.refresh_token, jwt_service)
+    user_id = get_user_id_from_token(token.refresh_token, jwt_service)
     return await token_generator(user_id, jwt_service, jwt_rt_create_service)
 
 @api_router.post("/logout")
@@ -62,21 +69,33 @@ async def logout(
         jwt_service: JwtService = Depends(get_jwt_service),
         jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
 ):
-    user_id = get_user_id_from_refresh_token(token.refresh_token, jwt_service)
+    user_id = get_user_id_from_token(token.refresh_token, jwt_service)
     await jwt_rt_create_service.disable_tokens_by_user(user_id)
 
     return {"message": "success"}
+
+@api_router.get("/me")
+async def me(
+        credentials: HTTPAuthorizationCredentials = Depends(security),
+        jwt_service: JwtService = Depends(get_jwt_service),
+        user_repo: UserRepository = Depends(get_user_repo),
+        cache: Cache = Depends(get_redis_cache)
+) -> UserRead:
+    access_token = credentials.credentials
+    user_id = get_user_id_from_token(access_token, jwt_service)
+
+    return await get_or_set_to_cache_user_by_id(user_id, user_repo, cache)
 
 def get_new_user_validator(login: str, password: str, user_repo: UserRepository):
     password_validator = PasswordValidator(password)
     unique_login_validator = UniqueLoginValidator(login, user_repo)
     return NewUserValidator(password_validator, unique_login_validator)
 
-def get_user_id_from_refresh_token(
-        refresh_token: str,
+def get_user_id_from_token(
+        token: str,
         jwt_service: JwtService = Depends(get_jwt_service),
 ):
-    payload = jwt_service.decode(refresh_token)
+    payload = jwt_service.decode(token)
 
     return payload.get("user_id")
 
@@ -106,3 +125,17 @@ async def token_generator(
         access_token=access_token,
         refresh_token=refresh_token,
     )
+
+async def get_or_set_to_cache_user_by_id(
+        user_id: int,
+        user_repo: UserRepository,
+        cache: Cache,
+) -> UserRead:
+    user = await cache.get(f"user:{user_id}")
+    if user:
+        return UserRead.model_validate_json(user)
+
+    user = await user_repo.get_by_id(user_id)
+    user_schema = UserRead(**user.to_dict())
+    await cache.set(f"user:{user_id}", user_schema.model_dump_json())
+    return user_schema

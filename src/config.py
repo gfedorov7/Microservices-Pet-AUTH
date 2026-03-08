@@ -40,10 +40,17 @@ class KeysSettings(CommonSettings):
         with open(path, "rb") as f:
             return f.read()
 
+class RedisSettings(CommonSettings):
+    redis_host: str
+    redis_port: int
+    redis_decode_responses: bool
+
+
 class Settings:
     database_settings: DatabaseSettings = DatabaseSettings()
     token_settings: TokenSettings = TokenSettings()
     password_params_settings: PasswordParamsSettings = PasswordParamsSettings()
     keys_settings: KeysSettings = KeysSettings()
+    redis_settings: RedisSettings = RedisSettings()
 
 settings = Settings()
