@@ -5,7 +5,7 @@ from src.util.decoder.decoder import Decoder
 from src.util.encoder.encoder import Encoder
 
 
-class JWTService:
+class JwtService:
     def __init__(self, encoder: Encoder, decoder: Decoder):
         self.encoder = encoder
         self.decoder = decoder
