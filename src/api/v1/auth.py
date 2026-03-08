@@ -58,11 +58,8 @@ async def refresh(
         jwt_service: JwtService = Depends(get_jwt_service),
         jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
 ):
-    print(token.refresh_token)
     payload = jwt_service.decode(token.refresh_token)
-    print(payload)
     user_id = payload.get("user_id")
-    print(user_id)
 
     return await token_generator(user_id, jwt_service, jwt_rt_create_service)
 
