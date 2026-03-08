@@ -13,7 +13,7 @@ class PasswordValidator(Validator):
         self.len_password = settings.password_params_settings.len_password
         self.available_spec_symbols = settings.password_params_settings.available_spec_symbols
 
-    def is_valid(self) -> bool:
+    async def is_valid(self) -> bool:
         if not self._check_len_password():
             raise AppException(app_errors[ErrorType.PASSWORD_SHORT])
         if not self._check_available_spec_symbols():
@@ -32,7 +32,7 @@ class PasswordValidator(Validator):
         return any(map(lambda s: s in self.password, self.available_spec_symbols))
 
     def _check_numbers_in_password(self):
-        return re.search('\d+', self.password) is not None
+        return re.search(r"\d+", self.password) is not None
 
     def _check_letters_in_password(self):
-        return re.search('[a-zA-Z]', self.password) is not None
+        return re.search(r"[a-zA-Z]", self.password) is not None

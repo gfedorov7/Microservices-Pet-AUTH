@@ -7,10 +7,10 @@ class NewUserValidator(Validator):
         self.password_validator = password_validator
         self.unique_login_validator = unique_login_validator
 
-    def is_valid(self) -> bool:
+    async def is_valid(self) -> bool:
         try:
-            self.password_validator.is_valid()
-            self.unique_login_validator.is_valid()
+            await self.password_validator.is_valid()
+            await self.unique_login_validator.is_valid()
         except AppException as e:
             raise e
 

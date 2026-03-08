@@ -18,4 +18,4 @@ class UniqueLoginValidator(Validator):
 
     async def _check_login_to_unique(self):
         founded_logins = await self.user_repository.get_by_login(self.login)
-        return len(founded_logins) == 0
+        return not bool(founded_logins)
