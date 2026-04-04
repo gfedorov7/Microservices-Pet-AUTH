@@ -46,4 +46,9 @@ app_errors = {
         message="Invalid password",
         code=401,
     ),
+
+    ErrorType.TOKEN_NOT_FOR_THIS_USER: AppError(
+        message="Token not for this user",
+        code=401,
+    ),
 }

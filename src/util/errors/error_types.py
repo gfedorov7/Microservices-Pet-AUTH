@@ -16,3 +16,5 @@ class ErrorType(Enum):
 
     USER_NOT_FOUND = "User not found"
     INVALID_PASSWORD = "Password invalid"
+
+    TOKEN_NOT_FOR_THIS_USER = "Token not for this user"

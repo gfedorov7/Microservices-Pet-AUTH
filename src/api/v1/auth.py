@@ -61,6 +61,7 @@ async def refresh(
         jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
 ):
     user_id = get_user_id_from_token(token.refresh_token, jwt_service)
+    await jwt_rt_create_service.check_valid_for_user_refresh_token(user_id, token.refresh_token)
     return await token_generator(user_id, jwt_service, jwt_rt_create_service)
 
 @api_router.post("/logout")
@@ -70,7 +71,7 @@ async def logout(
         jwt_rt_create_service: JwtRefreshTokenCreateService = Depends(get_jwt_refresh_token_create_service),
 ):
     user_id = get_user_id_from_token(token.refresh_token, jwt_service)
-    await jwt_rt_create_service.disable_tokens_by_user(user_id)
+    await jwt_rt_create_service.disable_tokens_by_user(user_id, token.refresh_token)
 
     return {"message": "success"}
 

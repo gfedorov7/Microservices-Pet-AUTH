@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class RefreshTokenModelBase(BaseModel):
-    token: str
+    token: str | bytes
     is_expired: bool = False
     expired_at: datetime
     user_id: int
