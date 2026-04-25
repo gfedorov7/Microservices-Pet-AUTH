@@ -45,6 +45,11 @@ class RedisSettings(CommonSettings):
     redis_port: int
     redis_decode_responses: bool
 
+class KafkaSettings(CommonSettings):
+    kafka_broker_id: int
+    kafka_zookeeper_connect: str
+    kafka_advertised_listeners: str
+    kafka_offsets_topic_replication_factor: int
 
 class Settings:
     database_settings: DatabaseSettings = DatabaseSettings()
@@ -52,5 +57,6 @@ class Settings:
     password_params_settings: PasswordParamsSettings = PasswordParamsSettings()
     keys_settings: KeysSettings = KeysSettings()
     redis_settings: RedisSettings = RedisSettings()
+    kafka_settings: KafkaSettings = KafkaSettings()
 
 settings = Settings()
