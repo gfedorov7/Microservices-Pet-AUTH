@@ -76,7 +76,7 @@ services:
 
   go_consumer:
     build:
-      context: C:\._programming\clickHouseConsumer #пока так, потом уберу на нормальное
+      context: ./clickHouseConsumer
     container_name: go_consumer
     depends_on:
       kafka:

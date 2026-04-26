@@ -101,7 +101,7 @@ async def logout(
 ):
     user_id = get_user_id_from_token(token.refresh_token, jwt_service)
     await jwt_rt_create_service.disable_tokens_by_user(user_id, token.refresh_token)
-    await event(request, "auth", AvailableType.user_logged_out, jwt_service, producer)
+    await event(request, "auth", AvailableType.user_logged_out, jwt_service, producer, user_id)
     return {"message": "success"}
 
 @api_router.get("/me")
@@ -124,8 +124,8 @@ async def event(
         producer: Producer,
         access_token: str = None,
         anonymous_user_id: str = None,
+        user_id: int = None,
 ):
-    user_id = None
     if access_token:
         user_id = get_user_id_from_token(access_token, jwt_service)
 
