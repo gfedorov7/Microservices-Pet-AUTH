@@ -1,4 +1,5 @@
 import json
+import time
 from datetime import datetime, timedelta
 from typing import Any, Coroutine
 
@@ -51,11 +52,11 @@ async def sign_up(
         new_user_validator = get_new_user_validator(user_in.login, user_in.password, user_repo)
         new_user = await user_create_service.create_user(user_in.model_dump(), new_user_validator)
         token = await token_generator(new_user.id, jwt_service, jwt_rt_create_service)
-        await event(request, "success-auth", AvailableType.user_signed_up,
+        await event(request, "auth", AvailableType.user_signed_up,
               jwt_service, producer, token.access_token)
         return token
     except AppException:
-        await event(request, "unsuccess-auth",
+        await event(request, "auth",
                     AvailableType.user_login_failed, jwt_service, producer)
         raise
 
@@ -71,12 +72,12 @@ async def login(
     try:
         user = await auth_service.login(user_in.model_dump())
         token = await token_generator(user.id, jwt_service, jwt_rt_create_service)
-        await event(request, "success-login",
+        await event(request, "auth",
                     AvailableType.user_logged_in, jwt_service,
                     producer, token.access_token)
         return token
     except AppException:
-        await event(request, "unsuccess-login",
+        await event(request, "auth",
                     AvailableType.user_login_failed, jwt_service, producer)
         raise
 
@@ -100,7 +101,7 @@ async def logout(
 ):
     user_id = get_user_id_from_token(token.refresh_token, jwt_service)
     await jwt_rt_create_service.disable_tokens_by_user(user_id, token.refresh_token)
-    await event(request, "success-logout", AvailableType.user_logged_out, jwt_service, producer)
+    await event(request, "auth", AvailableType.user_logged_out, jwt_service, producer)
     return {"message": "success"}
 
 @api_router.get("/me")
@@ -130,10 +131,10 @@ async def event(
 
     payload = {
         "user_id": user_id,
-        "anonymus_user_id": anonymous_user_id,
+        "anonymous_user_id": anonymous_user_id,
         "type": available_type.value,
-        "timestamp": datetime.now().isoformat(),
-        "user-agent": request.headers.get("user-agent"),
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "user_agent": request.headers.get("user-agent"),
         "ip": get_ip(request),
     }
 

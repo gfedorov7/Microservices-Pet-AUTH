@@ -68,9 +68,48 @@ services:
       - .env
     networks:
       - auth
+    healthcheck:
+      test: ["CMD", "bash", "-c", "nc -z localhost 9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  go_consumer:
+    build:
+      context: C:\._programming\clickHouseConsumer #пока так, потом уберу на нормальное
+    container_name: go_consumer
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - auth
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    env_file:
+      - .env
+    volumes:
+      - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - auth
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
   pg_data:
+  clickhouse_data:
 
 networks:
   auth:

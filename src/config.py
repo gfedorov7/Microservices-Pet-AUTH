@@ -48,6 +48,7 @@ class RedisSettings(CommonSettings):
 class KafkaSettings(CommonSettings):
     kafka_broker_id: int
     kafka_zookeeper_connect: str
+    kafka_listeners: str
     kafka_advertised_listeners: str
     kafka_offsets_topic_replication_factor: int
 
